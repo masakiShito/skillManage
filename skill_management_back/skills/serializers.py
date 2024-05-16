@@ -1,3 +1,4 @@
+# skills/serializers.py
 from rest_framework import serializers
 from .models import Category, Skill, UserSkill, LearningLog
 
@@ -12,6 +13,8 @@ class SkillSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UserSkillSerializer(serializers.ModelSerializer):
+    skill_name = serializers.ReadOnlyField(source='skill.name')
+
     class Meta:
         model = UserSkill
         fields = '__all__'
