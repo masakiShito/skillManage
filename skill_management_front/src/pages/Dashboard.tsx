@@ -1,53 +1,239 @@
-import React from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import '../styles/Dashboard.css';
 
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  nickname: string | null;
+  phone_number: string | null;
+  address: string | null;
+}
+
+interface UserSkill {
+  id: number;
+  skill_name: string;
+  level: number;
+  acquired_date: string;
+}
+
+interface LearningLog {
+  id: number;
+  note: string;
+  created_at: string;
+}
+
+interface Organization {
+  id: number;
+  company_name: string;
+  position: string;
+  start_date: string;
+  end_date: string | null;
+}
+
 const Dashboard: React.FC = () => {
-  const { logout } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [skills, setSkills] = useState<UserSkill[]>([]);
+  const [learningLogs, setLearningLogs] = useState<LearningLog[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [editedUser, setEditedUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          'http://localhost:8000/api/dashboard/',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response.data); // デバッグ用に取得したデータを確認
+        setUser(response.data.user);
+        setSkills(response.data.skills);
+        setLearningLogs(response.data.learning_logs);
+        setOrganizations(response.data.organizations);
+      } catch (error) {
+        setError('データの取得に失敗しました。');
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleEditClick = () => {
+    setEditMode(true);
+    setEditedUser(user);
+  };
+
+  const handleSaveClick = async () => {
+    if (editedUser) {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.put(
+          `http://localhost:8000/api/users/${editedUser.id}/`,
+          editedUser,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setUser(editedUser);
+        setEditMode(false);
+      } catch (error) {
+        setError('データの保存に失敗しました。');
+        console.error(error);
+      }
+    }
+  };
+
+  const handleCancelClick = () => {
+    setEditMode(false);
+    setEditedUser(user);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (editedUser) {
+      setEditedUser({
+        ...editedUser,
+        [e.target.name]: e.target.value,
+      });
+    }
+  };
 
   return (
     <div className="dashboard-container">
       <nav className="navbar">
-        <h1>ダッシュボード</h1>
-        <button onClick={logout} className="logout-button">
-          ログアウト
-        </button>
+        <h1>
+          <i className="fas fa-tachometer-alt"></i> ダッシュボード
+        </h1>
       </nav>
       <main className="main-content">
-        <section className="welcome-section">
-          <h2>ようこそ、ユーザーさん！</h2>
-          <p>スキルと目標を管理し、進捗を確認しましょう。</p>
-        </section>
+        {error && <p className="error">{error}</p>}
+        {user && (
+          <section className="welcome-section">
+            <div className="card">
+              <h2>
+                <i className="fas fa-user"></i> ようこそ、
+                {user.nickname || user.username}さん！
+              </h2>
+              {editMode ? (
+                <div>
+                  <div className="input-group">
+                    <label>メール:</label>
+                    <input
+                      type="text"
+                      name="email"
+                      value={editedUser?.email || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>電話番号:</label>
+                    <input
+                      type="text"
+                      name="phone_number"
+                      value={editedUser?.phone_number || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>住所:</label>
+                    <input
+                      type="text"
+                      name="address"
+                      value={editedUser?.address || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="button-container">
+                    <button onClick={handleSaveClick} className="save-button">
+                      保存
+                    </button>
+                    <button
+                      onClick={handleCancelClick}
+                      className="cancel-button"
+                    >
+                      キャンセル
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <p>
+                    <i className="fas fa-envelope"></i> メール: {user.email}
+                  </p>
+                  <p>
+                    <i className="fas fa-phone"></i> 電話番号:{' '}
+                    {user.phone_number}
+                  </p>
+                  <p>
+                    <i className="fas fa-home"></i> 住所: {user.address}
+                  </p>
+                  <button onClick={handleEditClick} className="edit-button">
+                    <i className="fas fa-edit"></i> 編集
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
         <section className="skills-section">
-          <h3>あなたのスキル</h3>
-          <ul>
-            <li>React - 進行中</li>
-            <li>TypeScript - 完了</li>
-            <li>GraphQL - 進行中</li>
-          </ul>
+          <div className="card">
+            <h3>
+              <i className="fas fa-book"></i> あなたのスキル
+            </h3>
+            <ul>
+              {skills.map((userSkill) => (
+                <li key={userSkill.id}>
+                  <i className="fas fa-check-circle"></i> {userSkill.skill_name}{' '}
+                  - レベル: {userSkill.level} - 習得日:{' '}
+                  {userSkill.acquired_date}
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
-        <section className="goals-section">
-          <h3>あなたの目標</h3>
-          <ul>
-            <li>Reactプロジェクトを完了する - 進行中</li>
-            <li>TypeScriptの習得 - 完了</li>
-            <li>GraphQLの学習 - 進行中</li>
-          </ul>
+        <section className="learning-logs-section">
+          <div className="card">
+            <h3>
+              <i className="fas fa-list"></i> 学習ログ
+            </h3>
+            <ul>
+              {learningLogs.map((log) => (
+                <li key={log.id}>
+                  <i className="fas fa-book-open"></i> {log.note} - 日付:{' '}
+                  {new Date(log.created_at).toLocaleDateString()}
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
-        <section className="activity-section">
-          <h3>最近のアクティビティ</h3>
-          <ul>
-            <li>14:00に新しいスキル「TypeScript」を追加</li>
-            <li>10:00にタスク「Reactの学習」を完了</li>
-            <li>昨日、スキル「GraphQL」の学習を開始</li>
-          </ul>
-        </section>
-        <section className="notifications-section">
-          <h3>通知</h3>
-          <ul>
-            <li>3件の新しいメッセージがあります</li>
-            <li>「Djangoの学習」タスクの期限は明日です</li>
-          </ul>
+        <section className="organizations-section">
+          <div className="card">
+            <h3>
+              <i className="fas fa-building"></i> 所属組織
+            </h3>
+            <ul>
+              {organizations.map((org) => (
+                <li key={org.id}>
+                  <i className="fas fa-briefcase"></i> {org.company_name} -
+                  ポジション: {org.position} - 期間:{' '}
+                  {new Date(org.start_date).toLocaleDateString()} 〜{' '}
+                  {org.end_date
+                    ? new Date(org.end_date).toLocaleDateString()
+                    : '現在'}
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
       </main>
     </div>

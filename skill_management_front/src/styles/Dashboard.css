@@ -1,9 +1,9 @@
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Montserrat', sans-serif;
+  background: #f7f9fc;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background: #f5f7fa;
 }
 
 .dashboard-container {
@@ -13,26 +13,17 @@ body {
 }
 
 .navbar {
-  background: #007bff;
+  background: #283e4a;
   color: white;
-  padding: 1rem;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.logout-button {
-  background: #ff4d4d;
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.logout-button:hover {
-  background: #e60000;
+.navbar h1 {
+  margin: 0;
+  font-size: 1.5rem;
 }
 
 .main-content {
@@ -43,49 +34,143 @@ body {
   gap: 2rem;
 }
 
-.welcome-section {
-  text-align: center;
-}
-
-.skills-section,
-.goals-section,
-.activity-section,
-.notifications-section {
+.card {
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.skills-section h3,
-.goals-section h3,
-.activity-section h3,
-.notifications-section h3 {
+.welcome-section .card,
+.skills-section .card,
+.learning-logs-section .card,
+.organizations-section .card {
+  margin-bottom: 2rem;
+}
+
+.card h2,
+.card h3 {
   margin: 0 0 1rem;
-  color: #333;
+  color: #283e4a;
 }
 
-.skills-section ul,
-.goals-section ul,
-.activity-section ul,
-.notifications-section ul {
+.card p,
+.card li {
+  color: #606060;
+}
+
+ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.skills-section li,
-.goals-section li,
-.activity-section li,
-.notifications-section li {
+li {
   padding: 0.5rem 0;
   border-bottom: 1px solid #eee;
-  color: #666;
+  display: flex;
+  align-items: center;
 }
 
-.skills-section li:last-child,
-.goals-section li:last-child,
-.activity-section li:last-child,
-.notifications-section li:last-child {
+li i {
+  margin-right: 0.5rem;
+  color: #007bff;
+}
+
+li:last-child {
   border-bottom: none;
+}
+
+.error {
+  color: red;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #283e4a;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.button-container {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.edit-button,
+.save-button,
+.cancel-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.edit-button {
+  background-color: #28a745;
+  border: 2px solid #28a745;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.edit-button:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+  transform: translateY(-2px);
+}
+
+.edit-button i {
+  margin-right: 0.5rem;
+}
+
+.save-button {
+  background-color: #007bff;
+  border: 2px solid #007bff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.save-button:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+  transform: translateY(-2px);
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  border: 2px solid #6c757d;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-button:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
 }
