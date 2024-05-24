@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/Dashboard.css';
+import BasicInfo from '../components/BasicInfo';
+import Skills from '../components/Skills';
+import LearningLogs from '../components/LearningLogs';
+import Organizations from '../components/Organizations';
 
 interface User {
   id: number;
@@ -13,9 +17,20 @@ interface User {
 
 interface UserSkill {
   id: number;
-  skill_name: string;
+  skill: Skill;
   level: number;
   acquired_date: string;
+}
+
+interface Skill {
+  id: number;
+  name: string;
+  category: Category;
+}
+
+interface Category {
+  id: number;
+  name: string;
 }
 
 interface LearningLog {
@@ -108,6 +123,18 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const addSkill = (newSkill: UserSkill) => {
+    setSkills([...skills, newSkill]);
+  };
+
+  const updateSkill = (updatedSkill: UserSkill) => {
+    setSkills(
+      skills.map((skill) =>
+        skill.id === updatedSkill.id ? updatedSkill : skill
+      )
+    );
+  };
+
   return (
     <div className="dashboard-container">
       <nav className="navbar">
@@ -118,123 +145,19 @@ const Dashboard: React.FC = () => {
       <main className="main-content">
         {error && <p className="error">{error}</p>}
         {user && (
-          <section className="welcome-section">
-            <div className="card">
-              <h2>
-                <i className="fas fa-user"></i> ようこそ、
-                {user.nickname || user.username}さん！
-              </h2>
-              {editMode ? (
-                <div>
-                  <div className="input-group">
-                    <label>メール:</label>
-                    <input
-                      type="text"
-                      name="email"
-                      value={editedUser?.email || ''}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="input-group">
-                    <label>電話番号:</label>
-                    <input
-                      type="text"
-                      name="phone_number"
-                      value={editedUser?.phone_number || ''}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="input-group">
-                    <label>住所:</label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={editedUser?.address || ''}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="button-container">
-                    <button onClick={handleSaveClick} className="save-button">
-                      保存
-                    </button>
-                    <button
-                      onClick={handleCancelClick}
-                      className="cancel-button"
-                    >
-                      キャンセル
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <p>
-                    <i className="fas fa-envelope"></i> メール: {user.email}
-                  </p>
-                  <p>
-                    <i className="fas fa-phone"></i> 電話番号:{' '}
-                    {user.phone_number}
-                  </p>
-                  <p>
-                    <i className="fas fa-home"></i> 住所: {user.address}
-                  </p>
-                  <button onClick={handleEditClick} className="edit-button">
-                    <i className="fas fa-edit"></i> 編集
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
+          <BasicInfo
+            user={user}
+            editMode={editMode}
+            editedUser={editedUser}
+            handleEditClick={handleEditClick}
+            handleSaveClick={handleSaveClick}
+            handleCancelClick={handleCancelClick}
+            handleChange={handleChange}
+          />
         )}
-        <section className="skills-section">
-          <div className="card">
-            <h3>
-              <i className="fas fa-book"></i> あなたのスキル
-            </h3>
-            <ul>
-              {skills.map((userSkill) => (
-                <li key={userSkill.id}>
-                  <i className="fas fa-check-circle"></i> {userSkill.skill_name}{' '}
-                  - レベル: {userSkill.level} - 習得日:{' '}
-                  {userSkill.acquired_date}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-        <section className="learning-logs-section">
-          <div className="card">
-            <h3>
-              <i className="fas fa-list"></i> 学習ログ
-            </h3>
-            <ul>
-              {learningLogs.map((log) => (
-                <li key={log.id}>
-                  <i className="fas fa-book-open"></i> {log.note} - 日付:{' '}
-                  {new Date(log.created_at).toLocaleDateString()}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-        <section className="organizations-section">
-          <div className="card">
-            <h3>
-              <i className="fas fa-building"></i> 所属組織
-            </h3>
-            <ul>
-              {organizations.map((org) => (
-                <li key={org.id}>
-                  <i className="fas fa-briefcase"></i> {org.company_name} -
-                  ポジション: {org.position} - 期間:{' '}
-                  {new Date(org.start_date).toLocaleDateString()} 〜{' '}
-                  {org.end_date
-                    ? new Date(org.end_date).toLocaleDateString()
-                    : '現在'}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <Skills skills={skills} addSkill={addSkill} updateSkill={updateSkill} />
+        <LearningLogs learningLogs={learningLogs} />
+        <Organizations organizations={organizations} />
       </main>
     </div>
   );

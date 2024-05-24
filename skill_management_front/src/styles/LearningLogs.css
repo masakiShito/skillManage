@@ -1,0 +1,44 @@
+.learning-logs-section {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.card li {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.card li i {
+  color: #007bff;
+  margin-right: 10px;
+}
+
+.card li:last-child {
+  margin-bottom: 0;
+}
+
+.error {
+  color: red;
+}
